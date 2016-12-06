@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+body {
+    font-family: sans-serif;
+    background: #04F;
+    color: #FFF;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px auto;
+    font-size: 100px;
+    text-transform: lowercase;
+    color: #fff;
+
+    font-weight: bold;
+    text-shadow: 0px 0px 0 rgb(91,144,236),-1px 1px 0 rgb(81,134,226),-2px 2px 0 rgb(71,124,216),-3px 3px 0 rgb(60,113,205),-4px 4px 0 rgb(50,103,195),-5px 5px 0 rgb(40,93,185),-6px 6px 0 rgb(30,83,175),-7px 7px 0 rgb(20,73,165),-8px 8px 0 rgb(10,63,155),-9px 9px 0 rgb(-1,52,144),-10px 10px 0 rgb(-11,42,134),-11px 11px 0 rgb(-21,32,124), -12px 12px 0 rgb(-31,22,114),-13px 13px 12px rgba(0,0,0,0.8),-13px 13px 1px rgba(0,0,0,0.5),0px 0px 12px rgba(0,0,0,.2);
+}
+h1 a {
+    color: inherit;
+    text-decoration: none;
+
+}
+#title {
+    position: relative;
+}
+#version {
+    position: absolute;
+    text-transform: none;
+    right: -2em;
+    top: 0.5em;
+    background-color: red;
+    border: 10px solid red;
+    border-radius: 20px;
+    font-size: medium;
+    text-shadow: none;
+}
+#wft {
+    position: absolute;
+    text-transform: none;
+    left: 10px;
+    top: 10px;
+    background-color: red;
+    border: 10px solid red;
+    border-radius: 20px;
+    font-size: medium;
+    text-shadow: none;
+}
+
+.footer {
+    text-align: center;
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.games {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.game {
+    display: inline-block;
+    width: 300px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    height: 330px;
+    background: #666;
+    box-shadow: -4px 4px 0px 0px #222;
+}
+.game .content>* {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.game .content {
+    display: flex;
+    flex-flow: column;
+}
+.game .title {
+    font-size: larger;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+.game .image {
+    order: -1;
+    display: block;
+    width: 278px;
+    height: 208px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-size: cover;
+    background-position: center;
+}
+.game .description {
+    font-size: smaller;
+    height: 60px;
+}
+.game .description img {
+    display: none;
+}
+.game .platforms {
+    display: none;
+}
+
+@media only screen and (max-width : 1100px) {
+    h1 {
+        font-size: 75px;
+    }
+    #version {
+        font-size: small;
+        border: 7px solid red;
+        border-radius: 15px;
+        top: 0.2em;
+        right: -2.5em;
+    }
+    #wft {
+        font-size: small;
+        border: 7px solid red;
+        border-radius: 15px;
+    }
+}
+@media only screen and (max-width : 820px) {
+    h1 {
+        font-size: 50px;
+    }
+    #version {
+        font-size: x-small;
+        border: 5px solid red;
+        border-radius: 10px;
+        top: 0.1em;
+        right: -2.5em;
+    }
+    #wft {
+        font-size: small;
+        border: 7px solid red;
+        border-radius: 15px;
+    }
+}
+@media only screen and (max-width : 550px) {
+    h1 {
+        font-size: 24px;
+    }
+    #version {
+        font-size: x-small;
+        border: 3px solid red;
+        border-radius: 6px;
+        top: -1em;
+        right: -3.5em;
+    }
+    #wft {
+        font-size: x-small;
+        border: 3px solid red;
+        border-radius: 6px;
+    }
+}
+
+    </style>
+</head>
+<body>
+  <h1><a href="/"><span id="title">SuperHappyFunTimes</span></a><a id="wft" href="/about">WTF?</a></h1>
+</body>
+<script id="page" type="template">
+  <div class="games">
+
+  </div>
+  <div class="footer">
+      <a href="https://itch.io/games/tag-${tag}">[All ${tag} games...]</a>
+  </div>
+</script>
+<script id="game" type="template">
+  <div class="game">
+    <div class="content">
+    <div class="title"><a href="${link}">${plainTitle}</a></div>
+    <a class="image" href="${link}" style="background-image: url('${imageurl}');" /></a>
+    <div class="description">${description}</div>
+    <div class="platforms">${platforms}</div>
+    </div>
+  </div>
+</script>
+<script id="platform" type="template">
+  <div class="platform">${nodeName}</div>
+</script>
+<script>
+var tag = 'happyfuntimes';
+var $ = document.querySelector.bind(document);
+
+var templates = {};
+Array.prototype.forEach.call(document.querySelectorAll("script[type=template]"), function(e) {
+  return templates[e.id] = e.text;
+});
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', encodeURI('https://itch.io/games/newest/tag-' + tag + '.xml'));
+xhr.onload = function(e) {
+  if (this.status === 200) {
+    addGames(this.responseXML, document.querySelector(".games"));
+  } else {
+    console.log(this.status);
+    console.log(e);
+  }
+};
+xhr.send();
+
+var replaceParams = (function() {
+  var replaceParamsRE = /\$\{([^\}]+)\}/g;
+
+  return function(str, params) {
+    if (!params.length) {
+      params = [params];
+    }
+
+    return str.replace(replaceParamsRE, function(match, key) {
+      var keys = key.split('.');
+      for (var ii = 0; ii < params.length; ++ii) {
+        var obj = params[ii];
+        for (var jj = 0; jj < keys.length; ++jj) {
+          var part = keys[jj];
+          obj = obj[part];
+          if (obj === undefined) {
+            break;
+          }
+        }
+        if (obj !== undefined) {
+          return obj;
+        }
+      }
+      console.error("unknown key: " + key);
+      return "${" + key + "}";
+    });
+  };
+}());
+
+function createHTMLFromTemplate(template, data) {
+  var div = document.createElement("div");
+  var html = replaceParams(template, data);
+  div.innerHTML = html;
+  return div;
+}
+
+function addTemplate(parent, template, data) {
+  var elem = createHTMLFromTemplate(template, data);
+  moveChildrenToElem(elem, parent);
+}
+
+function moveChildrenToElem(src, dst) {
+  while (src.children.length) {
+    var child = src.children[0];
+    src.removeChild(child);
+    dst.appendChild(child);
+  }
+}
+
+function addGames(xml, parent) {
+  var page = createHTMLFromTemplate(templates.page, { tag: tag });
+  var games = page.querySelector(".games");
+  Array.prototype.forEach.call(xml.querySelectorAll("item"), function(item) {
+    var d = {};
+    Array.prototype.forEach.call(item.children, function(child) {
+      d[child.nodeName] = child.textContent;
+    });
+
+    if (!d.imageurl) {
+      return;
+    }
+
+    var platforms = item.querySelector("platforms");
+    if (platforms) {
+      d.platforms = Array.prototype.map.call(platforms.children, function(p) {
+        return replaceParams(templates.platform, p);
+      });
+    }
+
+    addTemplate(games, templates.game, d);
+  });
+  moveChildrenToElem(page, document.body);
+}
+
+</script>
+</html>
